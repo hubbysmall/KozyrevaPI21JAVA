@@ -8,11 +8,13 @@ import java.awt.Color;
 import java.awt.Dialog;
 import java.awt.Graphics;
 
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTextField;
+import javax.swing.Spring;
 
 import java.awt.Label;
 
@@ -25,6 +27,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 import javax.swing.JFormattedTextField;
+import javax.swing.JList;
 
 
 
@@ -36,6 +39,7 @@ public class Form {
 	JFormattedTextField formattedTextField;
 	static BufferedImage bic;
 	static ImageIcon newIcon;
+	JList list;
 	
 	Color color;
     Color addColor;
@@ -46,8 +50,7 @@ public class Form {
     private ITransport interFace;
     
     Port port;
-
-
+  
 	/**
 	 * Launch the application.
 	 */
@@ -75,7 +78,16 @@ public class Form {
         maxCountCargo = 3000;
         weight = 5000;
         
-        port = new Port();
+       port = new Port(4);
+       DefaultListModel listModel = new DefaultListModel ();
+       list.setModel(listModel);
+       for(int i=0; i<4; i++)
+       {
+    	   listModel.addElement("subport" + i);   	  
+       }
+
+       list.setSelectedIndex(port.getCurrentDock());
+       
        DrawMarking();
        drawTakeBox();
 
@@ -93,12 +105,15 @@ public class Form {
 	
 	public void DrawMarking(){
 		
+		if (list.getSelectedIndex() > -1)
+        {
          bic = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
          Graphics g = bic.createGraphics();
          newIcon = new ImageIcon(bic); 
          JLabel label1 = new JLabel(newIcon);
  		 panel.add(label1).setBounds(0,0,panel.getWidth(), panel.getHeight());     
-         port.DrawItAll(g, panel.getWidth(), panel.getHeight());            
+         port.DrawItAll(g, panel.getWidth(), panel.getHeight());  
+        }
 	}
 
 	/**
@@ -106,7 +121,7 @@ public class Form {
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 866, 671);
+		frame.setBounds(100, 100, 900, 671);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
@@ -115,7 +130,7 @@ public class Form {
 		frame.getContentPane().add(TakeBoatPanel);
 		
 		 panel = new JPanel();
-		panel.setBounds(10, 11, 830, 478);
+		panel.setBounds(10, 11, 868, 478);
 		frame.getContentPane().add(panel);
 		
 		JButton PutBoatbtn = new JButton("PutBoat");
@@ -171,18 +186,27 @@ public class Form {
 		TakeShipBtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
-				if (formattedTextField.getText() != "")
+				
+				if (list.getSelectedIndex() > -1)
 	            {
-					TakeBoatPanel.validate();
-					TakeBoatPanel.repaint();
-	                
-	                ITransport boat = port.PutOutDock(Integer.parseInt(formattedTextField.getText()));
-	                boat.setPosition(5, 45);
-	                boat.drawBoat(drawTakeBox());
-	                panel.validate();
-	                panel.repaint();
-	                DrawMarking();
- 
+					String stage = ""+ list.getSelectedIndex();
+					if (formattedTextField.getText() != "")
+		            {						
+						TakeBoatPanel.validate();
+						TakeBoatPanel.repaint();		                
+		                ITransport boat = port.PutOutDock(Integer.parseInt(formattedTextField.getText()));
+		                if (boat != null)
+	                    {
+			                boat.setPosition(5, 45);
+			                boat.drawBoat(drawTakeBox());
+			                panel.validate();
+			                panel.repaint();
+			                DrawMarking();
+	                    }
+		                else{
+		                	JOptionPane.showMessageDialog(null, "Тут ничего нет");
+		                }
+		            }
 	            }
 			}
 		});
@@ -192,6 +216,36 @@ public class Form {
 		JLabel lblNewLabel_1 = new JLabel("Number");
 		lblNewLabel_1.setBounds(127, 559, 46, 14);
 		frame.getContentPane().add(lblNewLabel_1);
+		
+		list = new JList();
+		list.setBounds(448, 500, 175, 88);
+		frame.getContentPane().add(list);
+		
+		JButton Prevbtn = new JButton("<<");
+		Prevbtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				port.LevelDown();
+	            list.setSelectedIndex(port.getCurrentDock());
+	            panel.validate();
+                panel.repaint();
+	            DrawMarking();
+			}
+		});
+		Prevbtn.setBounds(448, 598, 89, 23);
+		frame.getContentPane().add(Prevbtn);
+		
+		JButton Nextbutton = new JButton(">>");
+		Nextbutton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				port.LevelUp();
+	            list.setSelectedIndex(port.getCurrentDock());
+	            panel.validate();
+                panel.repaint();
+	            DrawMarking();
+			}
+		});
+		Nextbutton.setBounds(536, 598, 89, 23);
+		frame.getContentPane().add(Nextbutton);
 		
 		
 	}
