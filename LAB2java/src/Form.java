@@ -5,11 +5,13 @@ import javax.swing.JFrame;
 import java.awt.BorderLayout;
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Dialog;
 import java.awt.Graphics;
 
 import javax.swing.ImageIcon;
 import javax.swing.JColorChooser;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 
 import java.awt.Label;
@@ -22,16 +24,16 @@ import java.awt.event.ActionEvent;
 import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
+import javax.swing.JFormattedTextField;
 
 
 
 public class Form {
 
 	private JFrame frame;
-	private JTextField MaxSpeedtextField;
-	private JTextField MaxCargotextField;
-	private JTextField WeighttextField;
 	JPanel panel;
+	JPanel TakeBoatPanel;
+	JFormattedTextField formattedTextField;
 	static BufferedImage bic;
 	static ImageIcon newIcon;
 	
@@ -42,6 +44,8 @@ public class Form {
     int weight;
     
     private ITransport interFace;
+    
+    Port port;
 
 
 	/**
@@ -70,154 +74,125 @@ public class Form {
         maxSpeed = 30;
         maxCountCargo = 3000;
         weight = 5000;
+        
+        port = new Port();
+       DrawMarking();
+       drawTakeBox();
 
 	}
-	private boolean Check_input()
-    {
-		String test = "";
-		test = MaxCargotextField.getText();
-		try{
-			//код, который мы "отслеживаем"
-			int foo = Integer.parseInt(test);
-			maxCountCargo = foo;
-			}
-			catch( Exception e ){
-			//если происходить ошибка, которая соответствует классу  Exception
-				return false;
-			}
-		test = MaxSpeedtextField.getText();
-		try{
-			//код, который мы "отслеживаем"
-			int foo = Integer.parseInt(test);
-			maxSpeed = foo;
-			}
-			catch( Exception e ){
-			//если происходить ошибка, которая соответствует классу  Exception
-				return false;
-			}
-		test = WeighttextField.getText();
-		try{
-			//код, который мы "отслеживаем"
-			int foo = Integer.parseInt(test);
-			weight = foo;
-			}
-			catch( Exception e ){
-			//если происходить ошибка, которая соответствует классу  Exception
-				return false;
-			}
-        return true;
-    }
-
-
+	
+	public Graphics drawTakeBox(){
+	
+        bic = new BufferedImage(TakeBoatPanel.getWidth(), TakeBoatPanel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+        Graphics g = bic.createGraphics();
+        newIcon = new ImageIcon(bic); 
+        JLabel label1 = new JLabel(newIcon);
+        TakeBoatPanel.add(label1).setBounds(0,0,TakeBoatPanel.getWidth(), TakeBoatPanel.getHeight());      
+        return g;      
+	}
+	
+	public void DrawMarking(){
+		
+         bic = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
+         Graphics g = bic.createGraphics();
+         newIcon = new ImageIcon(bic); 
+         JLabel label1 = new JLabel(newIcon);
+ 		 panel.add(label1).setBounds(0,0,panel.getWidth(), panel.getHeight());     
+         port.DrawItAll(g, panel.getWidth(), panel.getHeight());            
+	}
 
 	/**
 	 * Initialize the contents of the frame.
 	 */
 	private void initialize() {
 		frame = new JFrame();
-		frame.setBounds(100, 100, 602, 493);
+		frame.setBounds(100, 100, 866, 671);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		
-		JLabel MaxSpeedlbl = new JLabel("Max speed");
-		MaxSpeedlbl.setBounds(10, 399, 67, 14);
-		frame.getContentPane().add(MaxSpeedlbl);
-		
-		MaxSpeedtextField = new JTextField();
-		MaxSpeedtextField.setBounds(68, 396, 37, 20);
-		frame.getContentPane().add(MaxSpeedtextField);
-		MaxSpeedtextField.setColumns(10);
-		
-		Label label = new Label("Max cargo");
-		label.setBounds(10, 419, 58, 22);
-		frame.getContentPane().add(label);
-		
-		MaxCargotextField = new JTextField();
-		MaxCargotextField.setBounds(68, 421, 37, 20);
-		frame.getContentPane().add(MaxCargotextField);
-		MaxCargotextField.setColumns(10);
-		
-		JLabel lblNewLabel = new JLabel("Weight");
-		lblNewLabel.setBounds(110, 399, 46, 14);
-		frame.getContentPane().add(lblNewLabel);
-		
-		WeighttextField = new JTextField();
-		WeighttextField.setBounds(148, 396, 37, 20);
-		frame.getContentPane().add(WeighttextField);
-		WeighttextField.setColumns(10);
-		
-		JCheckBox Sailchckbx = new JCheckBox("Sail on");
-		Sailchckbx.setBounds(109, 419, 97, 23);
-		frame.getContentPane().add(Sailchckbx);
-		
-		JButton Boatbtn = new JButton("New boat");
-		Boatbtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (Check_input()) {
-	                interFace = new Boat(maxSpeed, maxCountCargo, weight,color);
-	       
-	                bic = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-	                Graphics g = bic.createGraphics();
-	                newIcon = new ImageIcon(bic); 
-	                JLabel label1 = new JLabel(newIcon);
-	        		panel.add(label1).setBounds(0,0,panel.getWidth(), panel.getHeight()); 
- 
-	                interFace.drawBoat(g);
-	               
-	    
-	            }
-				
-			}
-		});
-		Boatbtn.setBounds(205, 395, 89, 23);
-		frame.getContentPane().add(Boatbtn);
-		
-		JButton shipbtn = new JButton("New sailship");
-		shipbtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (Check_input())
-	            {
-	                interFace = new Sailing_ship(maxSpeed, maxCountCargo, weight, color,Sailchckbx.isSelected(), addColor);
-	                bic = new BufferedImage(panel.getWidth(), panel.getHeight(), BufferedImage.TYPE_INT_ARGB);
-	                Graphics g = bic.createGraphics();
-	                newIcon = new ImageIcon(bic); 
-	                JLabel label1 = new JLabel(newIcon);
-	        		panel.add(label1).setBounds(0,0,panel.getWidth(), panel.getHeight()); 
-	                interFace.drawBoat(g);
-	               
-	            }
-			}
-		});
-		shipbtn.setBounds(295, 418, 105, 23);
-		frame.getContentPane().add(shipbtn);
+		TakeBoatPanel = new JPanel();
+		TakeBoatPanel.setBounds(263, 489, 175, 132);
+		frame.getContentPane().add(TakeBoatPanel);
 		
 		 panel = new JPanel();
-		panel.setBounds(10, 11, 547, 368);
+		panel.setBounds(10, 11, 830, 478);
 		frame.getContentPane().add(panel);
 		
-		JButton MainColorbtn = new JButton("Main color");
-		MainColorbtn.addActionListener(new ActionListener() {
-			@SuppressWarnings("static-access")
+		JButton PutBoatbtn = new JButton("PutBoat");
+		PutBoatbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				JColorChooser colCh = new JColorChooser();
-
-				color = colCh.showDialog(frame, "select", Color.BLUE);
 				
+	            
+	            JColorChooser colCh = new JColorChooser();
+				color = colCh.showDialog(frame, "select", Color.BLUE);
+				if(colCh.getVerifyInputWhenFocusTarget()){
+					Boat boat = new Boat(8, 180, 200, color);
+	                int place = port.PutInDock(boat);
+	                DrawMarking();	           	        
+	                JOptionPane.showMessageDialog(null, "Судно в доке с номером:" + place);
+	               
+				}
+	            
+	            
 			}
 		});
-		MainColorbtn.setBounds(426, 390, 89, 23);
-		frame.getContentPane().add(MainColorbtn);
+		PutBoatbtn.setBounds(20, 521, 89, 23);
+		frame.getContentPane().add(PutBoatbtn);
 		
-		JButton addColbtn = new JButton("Add color");
-		addColbtn.addActionListener(new ActionListener() {
-			@SuppressWarnings("static-access")
+		JButton putShipButton = new JButton("PutShip");
+		putShipButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				JColorChooser colCh = new JColorChooser();
+				color = colCh.showDialog(frame, "select", Color.BLUE);
+	            if (colCh.getVerifyInputWhenFocusTarget())
+	            {
+	            	addColor = colCh.showDialog(frame, "select", Color.BLUE);
+	                if (colCh.getVerifyInputWhenFocusTarget())
+	                {
+	                    Sailing_ship sail_boat = new Sailing_ship(20, 1000, 1500, color, true, addColor);
+	                    int place = port.PutInDock(sail_boat);
+	                      DrawMarking();	        
+	                    JOptionPane.showMessageDialog(null, "Парусник в доке с номером:" + place);
+	                }
 
-				addColor = colCh.showDialog(frame, "select", Color.BLUE);
+	            }
 			}
 		});
-		addColbtn.setBounds(426, 419, 89, 23);
-		frame.getContentPane().add(addColbtn);
+		putShipButton.setBounds(20, 555, 89, 23);
+		frame.getContentPane().add(putShipButton);
+		
+		
+		
+		formattedTextField = new JFormattedTextField();
+		formattedTextField.setBounds(174, 556, 37, 20);
+		frame.getContentPane().add(formattedTextField);
+		
+		JButton TakeShipBtn = new JButton("Take");
+		TakeShipBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+				if (formattedTextField.getText() != "")
+	            {
+					TakeBoatPanel.validate();
+					TakeBoatPanel.repaint();
+	                
+	                ITransport boat = port.PutOutDock(Integer.parseInt(formattedTextField.getText()));
+	                boat.setPosition(5, 45);
+	                boat.drawBoat(drawTakeBox());
+	                panel.validate();
+	                panel.repaint();
+	                DrawMarking();
+ 
+	            }
+			}
+		});
+		TakeShipBtn.setBounds(141, 521, 89, 23);
+		frame.getContentPane().add(TakeShipBtn);
+		
+		JLabel lblNewLabel_1 = new JLabel("Number");
+		lblNewLabel_1.setBounds(127, 559, 46, 14);
+		frame.getContentPane().add(lblNewLabel_1);
+		
+		
 	}
 }
