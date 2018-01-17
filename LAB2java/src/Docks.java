@@ -1,59 +1,61 @@
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class Docks<T extends ITransport>    {
 	
-	 private ITransport[] places;
      private T defaultVal;
+     private int maxCount;
+     private Map <Integer, T> docks; 
+
 
      public Docks(int size, T defV)
      {
          defaultVal = defV;
-         places = new ITransport[size];
-         for (int i = 0; i < places.length; i++)
-         {
-             places[i] = defaultVal;
-         }
+         docks = new HashMap<Integer,T>();
+         maxCount = size;
+        
      }
 
      public static int pseudoPlus (Docks<ITransport> plc, ITransport ship)
      {
-         for (int i = 0; i < plc.places.length; i++)
+    	 if (plc.docks.size() == plc.maxCount)
+             return -1;
+         for (int i=0; i<plc.docks.size(); i++)
          {
              if (plc.checkIfFree(i))
              {
-                 plc.places[i] = ship;
+                 plc.docks.put(i, ship);
                  return i;
              }
 
          }
-         return -1;
+         plc.docks.put(plc.docks.size(), ship);
+         return plc.docks.size() - 1;         
      }
 
      public static ITransport pseudoMinus(Docks<ITransport> plc, int index)
-     {
-         if (!plc.checkIfFree(index))
+     {       
+         if (plc.docks.containsKey(index))
          {
-        	 ITransport ship = plc.places[index];
-             plc.places[index] = plc.defaultVal;
+        	 ITransport ship = plc.docks.get(index);
+             plc.docks.remove(index);
              return ship;
          }
-         return plc.defaultVal;
+         return plc.defaultVal;     
      }
 
      private boolean checkIfFree(int index)
      {
-         if (index < 0 || index > places.length)
-             return false;
-         if (places[index] == null)
-             return true;
-         if (places[index].equals(defaultVal))
-             return true;
-         return false;
+        return !docks.containsKey(index);
      }
+     
+     public ITransport getShip(int indx)
+    {      
+            if (docks.containsKey(indx))
+                return docks.get(indx);
+            return defaultVal;       
+    }
 
-     public ITransport getShip(int index)
-     {
-         if (index >= 0 && index < places.length)
-             return places[index];
-         return defaultVal;
-     }
+  
 }
