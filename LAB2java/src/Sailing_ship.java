@@ -26,4 +26,9 @@ public class Sailing_ship extends Boat {
             g.drawArc((int)startPosX+25,(int) startPosY-40, 50, 70, -90, 180);
         }
     }
+    @Override
+    public void SetDopColor(Color color)
+    {
+        addColor = color;
+    }
 }

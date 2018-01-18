@@ -29,17 +29,16 @@ import javax.swing.JPanel;
 import javax.swing.JFormattedTextField;
 import javax.swing.JList;
 
-
-
 public class Form {
-
+	
+	additionalForm adF;
 	private JFrame frame;
-	JPanel panel;
+	static JPanel panel;
 	JPanel TakeBoatPanel;
 	JFormattedTextField formattedTextField;
 	static BufferedImage bic;
 	static ImageIcon newIcon;
-	JList list;
+	static JList list;
 	
 	Color color;
     Color addColor;
@@ -47,9 +46,10 @@ public class Form {
     int maxCountCargo;
     int weight;
     
+    
     private ITransport interFace;
     
-    Port port;
+    static Port port;
   
 	/**
 	 * Launch the application.
@@ -88,6 +88,17 @@ public class Form {
 
        list.setSelectedIndex(port.getCurrentDock());
        
+       JButton btnOrderBoat = new JButton("OrderBoat");
+       btnOrderBoat.addActionListener(new ActionListener() {
+       	public void actionPerformed(ActionEvent e) {
+       		additionalForm adF = new additionalForm();
+       		adF.frame.setVisible(true);
+       		
+       	}
+       });
+       btnOrderBoat.setBounds(20, 589, 191, 23);
+       frame.getContentPane().add(btnOrderBoat);
+       
        DrawMarking();
        drawTakeBox();
 
@@ -103,7 +114,7 @@ public class Form {
         return g;      
 	}
 	
-	public void DrawMarking(){
+	public static void DrawMarking(){
 		
 		if (list.getSelectedIndex() > -1)
         {

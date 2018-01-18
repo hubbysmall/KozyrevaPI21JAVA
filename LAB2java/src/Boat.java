@@ -75,4 +75,7 @@ public class Boat extends Water_transport  {
            g.drawArc( (int)startPosX, (int)startPosY, 70, 50, 0, -180);
 
     }
+    public void SetDopColor(Color color)
+    {
+    }
 }
