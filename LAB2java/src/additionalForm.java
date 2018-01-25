@@ -286,19 +286,23 @@ public class additionalForm implements DragGestureListener{
 		Addbtn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				frame.setVisible(false);
-				if(returnBoat()!=null){
-	       			int place = Form.port.PutInDock(returnBoat());
-	                if (place > -1)
-	                {
-	                	Form.panel.validate();
+				if(returnBoat()!=null){									
+					try
+					{
+						int place = Form.port.PutInDock(returnBoat());
+						Form.panel.validate();
 	                	Form.panel.repaint();
 	                	Form.DrawMarking();                   
 	                    JOptionPane.showMessageDialog(null, "Ваше место:" + place);
-	                }
-	                else
-	                {
-	                    JOptionPane.showMessageDialog(null, "Поставить не получилось");
-	                }
+					}
+					catch(ParkingOverflowException ex)
+					{
+						JOptionPane.showMessageDialog(null, "Overflow");
+					}
+					catch (Exception ex)
+					{
+						JOptionPane.showMessageDialog(null, "Unknown error");
+					}			
 	       		} 											
 			}
 		});

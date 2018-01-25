@@ -17,10 +17,10 @@ public class Docks<T extends ITransport>    {
         
      }
 
-     public static int pseudoPlus (Docks<ITransport> plc, ITransport ship)
+     public static int pseudoPlus (Docks<ITransport> plc, ITransport ship) throws ParkingOverflowException
      {
     	 if (plc.docks.size() == plc.maxCount)
-             return -1;
+    		 throw new ParkingOverflowException();
          for (int i=0; i<plc.docks.size(); i++)
          {
              if (plc.checkIfFree(i))
@@ -34,7 +34,7 @@ public class Docks<T extends ITransport>    {
          return plc.docks.size() - 1;         
      }
 
-     public static ITransport pseudoMinus(Docks<ITransport> plc, int index)
+     public static ITransport pseudoMinus(Docks<ITransport> plc, int index) throws ParkingIndexOutOfRangeException
      {       
          if (plc.docks.containsKey(index))
          {
@@ -42,7 +42,7 @@ public class Docks<T extends ITransport>    {
              plc.docks.remove(index);
              return ship;
          }
-         return plc.defaultVal;     
+         throw new ParkingIndexOutOfRangeException();     
      }
 
      private boolean checkIfFree(int index)

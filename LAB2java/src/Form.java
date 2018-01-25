@@ -46,8 +46,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.LogManager;
+import java.util.logging.Logger;
 
 public class Form {
+	
+	Logger log;
 	
 	additionalForm adF;
 	private JFrame frame;
@@ -88,6 +94,21 @@ public class Form {
 	 * Create the application.
 	 */
 	public Form() {
+		log = Logger.getLogger(Form.class.getName());
+		
+		try {
+			FileHandler fh = new FileHandler("C:/Users/Мария/Desktop/LOG");
+			log.addHandler(fh);
+			
+		} catch (SecurityException e) {
+			log.log(Level.SEVERE,
+					"Не удалось создать файл лога из-за политики безопасности.", 
+					e);
+		} catch (IOException e) {
+			log.log(Level.SEVERE,
+					"Не удалось создать файл лога из-за ошибки ввода-вывода.",
+					e);
+		}					
 		initialize();
 		color = Color.WHITE;
         addColor = Color.YELLOW;
@@ -113,7 +134,7 @@ public class Form {
        		
        	}
        });
-       btnOrderBoat.setBounds(10, 664, 191, 23);
+       btnOrderBoat.setBounds(20, 564, 178, 23);
        frame.getContentPane().add(btnOrderBoat);
        
        JMenuBar menuBar = new JMenuBar();
@@ -134,11 +155,11 @@ public class Form {
        		if (result == JFileChooser.APPROVE_OPTION ){
        			try {       				      	
 					port.LoadData(fileChooser.getSelectedFile());							
-				} catch (IOException e1) {
+				} catch (IOException | ParkingOverflowException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
-       			JOptionPane.showMessageDialog(null,                                               fileChooser.getSelectedFile());
+       			JOptionPane.showMessageDialog(null, fileChooser.getSelectedFile());
        		}               
        	}
        });
@@ -200,89 +221,53 @@ public class Form {
 		frame.getContentPane().setLayout(null);
 		
 		TakeBoatPanel = new JPanel();
-		TakeBoatPanel.setBounds(208, 567, 175, 120);
+		TakeBoatPanel.setBounds(208, 555, 175, 132);
 		frame.getContentPane().add(TakeBoatPanel);
 		
 		 panel = new JPanel();
-		panel.setBounds(10, 11, 868, 545);
+		panel.setBounds(10, 11, 868, 533);
 		frame.getContentPane().add(panel);
-		
-		JButton PutBoatbtn = new JButton("PutBoat");
-		PutBoatbtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-					            
-	            JColorChooser colCh = new JColorChooser();
-				color = colCh.showDialog(frame, "select", Color.BLUE);
-				if(colCh.getVerifyInputWhenFocusTarget()){
-					Boat boat = new Boat(8, 180, 200, color);
-	                int place = port.PutInDock(boat);
-	                DrawMarking();	           	        
-	                JOptionPane.showMessageDialog(null, "Судно в доке с номером:" + place);	               
-				}	            	            
-			}
-		});
-		PutBoatbtn.setBounds(10, 598, 89, 23);
-		frame.getContentPane().add(PutBoatbtn);
-		
-		JButton putShipButton = new JButton("PutShip");
-		putShipButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JColorChooser colCh = new JColorChooser();
-				color = colCh.showDialog(frame, "select", Color.BLUE);
-	            if (colCh.getVerifyInputWhenFocusTarget())
-	            {
-	            	addColor = colCh.showDialog(frame, "select", Color.BLUE);
-	                if (colCh.getVerifyInputWhenFocusTarget())
-	                {
-	                    Sailing_ship sail_boat = new Sailing_ship(20, 1000, 1500, color, true, addColor);
-	                    int place = port.PutInDock(sail_boat);
-	                      DrawMarking();	        
-	                    JOptionPane.showMessageDialog(null, "Парусник в доке с номером:" + place);
-	                }
-
-	            }
-			}
-		});
-		putShipButton.setBounds(10, 630, 89, 23);
-		frame.getContentPane().add(putShipButton);
 				
 		formattedTextField = new JFormattedTextField();
-		formattedTextField.setBounds(161, 631, 37, 20);
+		formattedTextField.setBounds(161, 632, 37, 20);
 		frame.getContentPane().add(formattedTextField);
 		
 		JButton TakeShipBtn = new JButton("Take");
 		TakeShipBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				
-				
+			public void actionPerformed(ActionEvent e) {								
 				if (list.getSelectedIndex() > -1)
 	            {
 					String stage = ""+ list.getSelectedIndex();
 					if (formattedTextField.getText() != "")
-		            {						
-						TakeBoatPanel.validate();
-						TakeBoatPanel.repaint();		                
-		                ITransport boat = port.PutOutDock(Integer.parseInt(formattedTextField.getText()));
-		                if (boat != null)
-	                    {
+		            {											
+						try
+						{
+							TakeBoatPanel.validate();
+							TakeBoatPanel.repaint();		                
+			                ITransport boat = port.PutOutDock(Integer.parseInt(formattedTextField.getText()));
 			                boat.setPosition(5, 45);
 			                boat.drawBoat(drawTakeBox());
 			                panel.validate();
 			                panel.repaint();
 			                DrawMarking();
-	                    }
-		                else{
-		                	JOptionPane.showMessageDialog(null, "Тут ничего нет");
-		                }
+						}
+						catch(ParkingIndexOutOfRangeException ex)
+						{					
+							JOptionPane.showMessageDialog(null, "Such a place does not contain a car");
+						}
+						catch (Exception ex)
+						{
+							JOptionPane.showMessageDialog(null, "Unknown error");
+						}					
 		            }
 	            }
 			}
 		});
-		TakeShipBtn.setBounds(109, 598, 89, 23);
+		TakeShipBtn.setBounds(30, 598, 168, 23);
 		frame.getContentPane().add(TakeShipBtn);
 		
 		JLabel lblNewLabel_1 = new JLabel("Number");
-		lblNewLabel_1.setBounds(109, 634, 46, 14);
+		lblNewLabel_1.setBounds(40, 634, 46, 14);
 		frame.getContentPane().add(lblNewLabel_1);
 		
 		list = new JList();
@@ -297,6 +282,7 @@ public class Form {
 	            panel.validate();
                 panel.repaint();
 	            DrawMarking();
+	            log.info("Successful going to the previous level");
 			}
 		});
 		Prevbtn.setBounds(393, 664, 89, 23);
@@ -310,7 +296,7 @@ public class Form {
 	            panel.validate();
                 panel.repaint();
                 DrawMarking();
-	            
+                log.info("Successful going to the next level");	            
 			}
 		});
 		Nextbutton.setBounds(493, 664, 89, 23);

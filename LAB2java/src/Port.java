@@ -43,13 +43,13 @@ public class Port {
         }
     }
     @SuppressWarnings("static-access")
-	public int PutInDock(ITransport ship)
+	public int PutInDock(ITransport ship) throws ParkingOverflowException
     {
     	return port.get(currentDock).pseudoPlus(port.get(currentDock), ship);
 
     }
     @SuppressWarnings("static-access")
-	public ITransport PutOutDock(int dockNumber)
+	public ITransport PutOutDock(int dockNumber) throws ParkingIndexOutOfRangeException
     {
     	return port.get(currentDock).pseudoMinus(port.get(currentDock), dockNumber);
     }    
@@ -65,7 +65,7 @@ public class Port {
     public void DrawDocks(Graphics g)
     {
         g.setColor(Color.BLACK);
-        g.drawString("L" + (currentDock),(countDocks / 5) * DockWidth - 70, 480);
+        g.drawString("L" + (currentDock),(countDocks / 5) * DockWidth - 70, 485);
         g.drawRect(0, 0, (countDocks / 5) * DockWidth, 500);
         for (int i = 0; i < countDocks / 5; i++)
         {
@@ -132,7 +132,7 @@ public class Port {
     }
     
     
-    public Boolean LoadData(File filename) throws IOException
+    public Boolean LoadData(File filename) throws IOException, ParkingOverflowException
     {       
         if (!filename.exists())
         {
