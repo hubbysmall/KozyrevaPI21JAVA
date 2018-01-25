@@ -78,4 +78,32 @@ public class Boat extends Water_transport  {
     public void SetDopColor(Color color)
     {
     }
+	@Override
+	public String getInfo() {
+		return MaxSpeed + ";" + MaxCountCargos + ";" + BodyColor.getRed() + "," + BodyColor.getGreen() + "," + BodyColor.getBlue() + ";" + Weight;
+	}
+	
+	public Boat(String info)
+    {
+        String[] strs = info.split(";");
+        if (strs.length == 4)
+        {
+            MaxSpeed = Integer.parseInt(strs[0]);
+            MaxCountCargos = Integer.parseInt(strs[1]);
+            int r = Integer.parseInt(strs[2].split(",")[0]);
+			int g = Integer.parseInt(strs[2].split(",")[1]);
+			int b = Integer.parseInt(strs[2].split(",")[2]);
+            BodyColor = new Color(r, g, b);
+            Weight = Double.parseDouble(strs[3]);
+        }
+       
+        this.countCargos = 0;
+        Random rand = new Random();
+        startPosX = rand.nextInt(200) + 10;
+        startPosY = rand.nextInt(200) + 10;
+    }
+	@Override
+	public String getName() {
+		return "Boat";
+	}
 }
