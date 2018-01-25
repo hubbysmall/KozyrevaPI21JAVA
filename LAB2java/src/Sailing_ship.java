@@ -31,4 +31,35 @@ public class Sailing_ship extends Boat {
     {
         addColor = color;
     }
+    public Sailing_ship(String info) 
+    {
+    	super(info);
+        String[] strs = info.split(";");
+        if (strs.length == 6)
+        {
+            MaxSpeed = Integer.parseInt(strs[0]);
+            MaxCountCargos = Integer.parseInt(strs[1]);
+            Weight = Double.parseDouble(strs[2]);
+            int r = Integer.parseInt(strs[3].split(",")[0]);
+			int g = Integer.parseInt(strs[3].split(",")[1]);
+			int b = Integer.parseInt(strs[3].split(",")[2]);
+            BodyColor = new Color(r, g, b);
+            sail = Boolean.parseBoolean(strs[4]);
+            r = Integer.parseInt(strs[5].split(",")[0]);
+			g = Integer.parseInt(strs[5].split(",")[1]);
+			b = Integer.parseInt(strs[5].split(",")[2]);
+            addColor = new Color(r, g, b);           
+        }
+    }
+    @Override
+    public  String getInfo()
+    {
+        return MaxSpeed + ";" + MaxCountCargos + ";" + Weight + ";" +BodyColor.getRed() + "," + BodyColor.getGreen() + "," + BodyColor.getBlue()+ ";" + sail + ";"+
+        		addColor.getRed() + "," + addColor.getGreen() + "," + addColor.getBlue();
+    }
+    @Override
+	public String getName() {
+		return "Sailing_ship";
+	}
+    
 }

@@ -10,5 +10,7 @@ public interface ITransport {
     void loadCargo(int count);
     int relieveCargo();
     void setMainColor(Color color);
+    String getInfo();
+    String getName();
 
 }

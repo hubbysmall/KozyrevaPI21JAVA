@@ -66,5 +66,8 @@ public abstract class Water_transport implements ITransport {
     {
         BodyColor = color;
     }
+	
+	public abstract String getInfo();
+	public abstract String getName();
 
 }
